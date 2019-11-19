@@ -1,8 +1,10 @@
-import config
 import requests
+import config
 import time
 from utils import Stack, Queue
 from room import Room
+
+#Ryan: token = 'f816a2a8dfba25cdd1a305a303681c2ccef582a1'
 
 token = config.TOKEN
 
@@ -37,9 +39,31 @@ while len(MapRoom) < 500:
     }
     
     # Request to move
-    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv//move", json=post_data, headers=headers)
+    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/move", json=post_data, headers=headers)
     data = res.json()
     roomID = data['room_id']
+
+    # Collect all rooms stored in the DB
+    def get_room_dict():
+        room_dict = {}
+        room_list = requests.get('https://team2-bw.herokuapp.com/api/rooms/').json()
+        for room in room_list:
+            room_dict[room['id']] = room
+        return room_dict
+    
+    # Variable for get_room_dict()
+    rooms_we_have = get_room_dict()
+        
+    # Compares the current room to the list of visited rooms in the DB. If the ID doesn't exist, post current ID data.  
+    if data['room_id'] not in rooms_we_have:
+        db_send = {
+            "id": data["room_id"],
+            "coordinates": data["coordinates"],
+            "name": data["title"],
+            "description": data["description"],
+        }
+        requests.post("https://team2-bw.herokuapp.com/api/rooms/", json=db_send).json()     
+
 
     print(data)
     MapRoom.append(roomID)
