@@ -44,11 +44,11 @@ while len(visitedRoom) < 500:
             print(res)
             time.sleep(data['cooldown'])
     
-    # check stats
-    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/status/", headers=headers)
-    stats = res.json()
-    print(stats)
-    time.sleep(data['cooldown'])
+        # check stats
+        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/status/", headers=headers)
+        stats = res.json()
+        print(stats)
+        time.sleep(data['cooldown'])
     
     visitedRoom[data["room_id"]] = data["coordinates"]
     print("visited room", visitedRoom)
@@ -64,3 +64,24 @@ while len(visitedRoom) < 500:
 
     print(data)
     time.sleep(data['cooldown'])
+
+    # Collect all rooms stored in the DB
+    def get_room_dict():
+        room_dict = {}
+        room_list = requests.get('https://team2-bw.herokuapp.com/api/rooms/').json()
+        for room in room_list:
+            room_dict[room['id']] = room
+        return room_dict
+    
+    # Variable for get_room_dict()
+    rooms_we_have = get_room_dict()
+        
+    # Compares the current room to the list of visited rooms in the DB. If the ID doesn't exist, post current ID data.  
+    if data['room_id'] not in rooms_we_have:
+        db_send = {
+            "id": data["room_id"],
+            "coordinates": data["coordinates"],
+            "name": data["title"],
+            "description": data["description"],
+        }
+        requests.post("https://team2-bw.herokuapp.com/api/rooms/", json=db_send).json()
