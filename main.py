@@ -16,7 +16,7 @@ data = init_response.json()
 print(data)
 
 time.sleep(data['cooldown'])
-room_exits = data['exits']
+# room_exits = data['exits']
 roomID = data['room_id']
 
 roomInfo = f'room_id: {data["room_id"]}, title: {data["title"]}, coords: {data["coordinates"]}'
@@ -77,12 +77,33 @@ while len(visitedRoom) < 500:
             print(res)
             time.sleep(data['cooldown'])
 
+    # Pray at shrine
+    if (data['title'] == "The Peak of Mt. Holloway" and data['name'] == "LeeTann"):
+
+        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/", headers=headers)
+        print(res.json())
+        time.sleep(data['cooldown'])
+
+
+    # Change name when pirate is found
+    if (data['title'] == "Pirate Ry's"):
+
+        change_name_data ={
+            "name": input("change your name: "),
+            "confirm": input("Confirm 'aye' to change name: ")
+        }
+
+        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/", json=change_name_data, headers=headers)
+        nameChange = res.json()
+        print(nameChange)
+        time.sleep(data['cooldown'])
+
     # enter next direction
     post_data = {
         "direction": input("Enter your direction: ")
     }
     
-    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv//move", json=post_data, headers=headers)
+    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/move/", json=post_data, headers=headers)
     data = res.json()
     roomID = data['room_id']
 
