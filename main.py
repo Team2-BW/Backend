@@ -111,13 +111,7 @@ from room import Room
 #         }
 #         requests.post("https://team2-bw.herokuapp.com/api/rooms/", json=db_send).json()
 
-
-token = config.TOKEN
-
-headers = {
-    'Authorization': f"Token {token}",
-    'Content-Type': 'application/json'
-}
+traversalGraph = {}
 
 def writeCurrentRoom(data):
     with open('currentRoom.json', 'w') as currentRoom:
@@ -128,14 +122,17 @@ def readCurrentRoom():
         data=currentRoom.read()
         return json.loads(data)
 
-writeCurrentRoom(requests.get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers).json())
-
-time.sleep(readCurrentRoom()['cooldown'])
-
-traversalGraph = {}
+def getItemsFromRoom():
+    current_room = readCurrentRoom()
+    
+    for item in current_room['items']:
+        print("Taking item")
+        tmpData = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/take/", json={'name': f'{item}'}, headers=headers).json()
+        print(f"waiting {tmpData['cooldown']} secs")
+        time.sleep(tmpData['cooldown'])
 
 def movePlayerAndWait(direction):
-    current_room = readCurrentRoom();
+    current_room = readCurrentRoom()
     print(f"moving in direction: {direction}")
     
     post_data = {
@@ -150,6 +147,7 @@ def movePlayerAndWait(direction):
 
     time.sleep(current_room['cooldown'])
     addCurrentRoomToGraph()
+    getItemsFromRoom()
 
 def addCurrentRoomToGraph():
     current_room = readCurrentRoom();
@@ -230,15 +228,24 @@ def traverseThisMap():
     if unexploredPath == None:
         return
     else:
-        for i in range(len(unexploredPath) - 1):
+        for i in range(len(unexploredPath)):
             if current_room['room_id'] == unexploredPath[-1]:
                 break
             for j in traversalGraph[current_room['room_id']]:
-                if traversalGraph[current_room['room_id']][j] == unexploredPath[i + 1]:
+                if traversalGraph[current_room['room_id']][j] == unexploredPath[i]:
                     movePlayerAndWait(j)
                     current_room = readCurrentRoom();
     traverseThisMap()
     
-                    
+token = config.TOKEN
+
+headers = {
+    'Authorization': f"Token {token}",
+    'Content-Type': 'application/json'
+}
+writeCurrentRoom(requests.get('https://lambda-treasure-hunt.herokuapp.com/api/adv/init/', headers=headers).json())
+
+time.sleep(readCurrentRoom()['cooldown'])
+
 addCurrentRoomToGraph()
 traverseThisMap()
