@@ -97,6 +97,7 @@ while len(visitedRoom) < 500:
         nameChange = res.json()
         print(nameChange)
         time.sleep(data['cooldown'])
+    
 
     # enter next direction
     post_data = {
