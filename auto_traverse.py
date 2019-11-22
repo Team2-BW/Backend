@@ -3,6 +3,7 @@ import requests
 import time
 from utils import Stack, Queue
 from room import Room
+import random
 
 token = config.TOKEN
 
@@ -16,7 +17,7 @@ data = init_response.json()
 print(data)
 
 time.sleep(data['cooldown'])
-# room_exits = data['exits']
+
 roomID = data['room_id']
 
 roomInfo = f'room_id: {data["room_id"]}, title: {data["title"]}, coords: {data["coordinates"]}'
@@ -68,49 +69,23 @@ while len(visitedRoom) < 500:
             print("Do you want to sell your treasure?")
             
             # Confirm to sell
-            # Tiny Treasure
             confirm_data = {
                 "name":"tiny treasure", 
                 "confirm": input("Confirm 'yes' to sell: ")
             }
-            # Small Treasure
-            # confirm_data = {
-            #     "name":"small treasure", 
-            #     "confirm": input("Confirm 'yes' to sell: ")
-            # }
             
             res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/sell/", json=confirm_data, headers=headers)
             print(res)
             time.sleep(data['cooldown'])
 
-    # Pray at shrine
-    if (data['title'] == "The Peak of Mt. Holloway" and data['name'] == "LeeTann"):
+    # Traverse the exits randomly
+    print("room exits:", data['exits'])
 
-        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/", headers=headers)
-        print(res.json())
-        time.sleep(data['cooldown'])
-
-
-    # Change name when pirate is found
-    if (data['title'] == "Pirate Ry's"):
-
-        change_name_data ={
-            "name": input("change your name: "),
-            "confirm": input("Confirm 'aye' to change name: ")
-        }
-
-        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/change_name/", json=change_name_data, headers=headers)
-        nameChange = res.json()
-        print(nameChange)
-        time.sleep(data['cooldown'])
-    
-
-    # enter next direction
     post_data = {
-        "direction": input("Enter your direction: ")
+        "direction": random.choice(room_exits)
     }
     
-    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/move/", json=post_data, headers=headers)
+    res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv//move", json=post_data, headers=headers)
     data = res.json()
     roomID = data['room_id']
 
@@ -138,3 +113,4 @@ while len(visitedRoom) < 500:
         }
         requests.post("https://team2-bw.herokuapp.com/api/rooms/", json=db_send).json()
 
+ 
