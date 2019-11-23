@@ -46,17 +46,17 @@ while len(visitedRoom) < 500:
     items = data['items']
     
     # take the items in room
-    if len(items) > 0:
-        for item in items:
-            res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/take/", json={'name': f'{item}'}, headers=headers)
-            print(res)
-            time.sleep(data['cooldown'])
+    # if len(items) > 0:
+    #     for item in items:
+    #         res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/take/", json={'name': f'{item}'}, headers=headers)
+    #         print(res)
+    #         time.sleep(data['cooldown'])
     
-        # check stats
-        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/status/", headers=headers)
-        stats = res.json()
-        print(stats)
-        time.sleep(data['cooldown'])
+    #     # check stats
+    #     res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/status/", headers=headers)
+    #     stats = res.json()
+    #     print(stats)
+    #     time.sleep(data['cooldown'])
     
     visitedRoom[data["room_id"]] = data["coordinates"]
     print("visited room", visitedRoom)

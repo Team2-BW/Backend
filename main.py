@@ -20,7 +20,7 @@ time.sleep(data['cooldown'])
 roomID = data['room_id']
 
 roomInfo = f'room_id: {data["room_id"]}, title: {data["title"]}, coords: {data["coordinates"]}'
-print(roomInfo)
+print(f'roomInfo: {roomInfo}')
 
 reverseDirections = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}
 traversalPath = []
@@ -45,17 +45,17 @@ while len(visitedRoom) < 500:
     items = data['items']
     
     # take the items in room
-    if len(items) > 0:
-        for item in items:
-            res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/take/", json={'name': f'{item}'}, headers=headers)
-            print(res)
-            time.sleep(data['cooldown'])
+    # if len(items) > 0:
+    #     for item in items:
+    #         res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/take/", json={'name': f'{item}'}, headers=headers)
+    #         print(res)
+    #         time.sleep(data['cooldown'])
     
-        # check stats
-        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/status/", headers=headers)
-        stats = res.json()
-        print(stats)
-        time.sleep(data['cooldown'])
+    #     # check stats
+    #     res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/status/", headers=headers)
+    #     stats = res.json()
+    #     print(stats)
+    #     time.sleep(data['cooldown'])
     
     visitedRoom[data["room_id"]] = data["coordinates"]
     print("visited room", visitedRoom)
@@ -84,11 +84,11 @@ while len(visitedRoom) < 500:
             time.sleep(data['cooldown'])
 
     # Pray at shrine
-    if (data['title'] == "The Peak of Mt. Holloway" and data['name'] == "LeeTann"):
+    # if (data['title'] == "The Peak of Mt. Holloway" and data['name'] == "player305"):
 
-        res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/", headers=headers)
-        print(res.json())
-        time.sleep(data['cooldown'])
+    #     res = requests.post("https://lambda-treasure-hunt.herokuapp.com/api/adv/pray/", headers=headers)
+    #     print(res.json())
+    #     time.sleep(data['cooldown'])
 
 
     # Change name when pirate is found
